@@ -62,7 +62,6 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'antistress', label: 'Антистресс' },
     { id: 'care', label: 'Забота' },
     { id: 'decider', label: 'Радости' },
-    { id: 'ideas', label: 'Идеи' },
   ];
 
   const scrollTo = (id: string) => {

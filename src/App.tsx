@@ -6,7 +6,6 @@ import { StressRelief } from './components/StressRelief';
 import { SecretLetters } from './components/SecretLetters';
 import { CareChecklist } from './components/CareChecklist';
 import { CozyDecider } from './components/CozyDecider';
-import { IdeaCatalog } from './components/IdeaCatalog';
 import { PersonalizeModal } from './components/PersonalizeModal';
 import { INITIAL_NOTES, INITIAL_CARE_ITEMS } from './data/defaultContent';
 import { MoodTheme, NoteItem } from './types';
@@ -412,7 +411,6 @@ export default function App() {
               { id: 'antistress', label: '🫧 Антистресс' },
               { id: 'care', label: '🌿 Забота' },
               { id: 'decider', label: '✨ Маленькие радости' },
-              { id: 'ideas', label: '💡 Идеи' },
             ].map((anchor) => (
               <button
                 key={anchor.id}
@@ -535,11 +533,6 @@ export default function App() {
             </p>
           </div>
           <CozyDecider />
-        </section>
-
-        {/* Section 7: Idea Catalog */}
-        <section id="ideas" className="scroll-mt-24 pt-4 border-t border-rose-100/80">
-          <IdeaCatalog onSelectConcept={(anchorId) => scrollTo(anchorId)} />
         </section>
       </main>
 
