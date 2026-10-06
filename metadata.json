@@ -1,0 +1,7 @@
+{
+  "name": "Уголок Уюта и Настроения",
+  "description": "Простой, душевный и интерактивный сайт для поднятия настроения с теплыми записками, антистресс-кнопками и заботой.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

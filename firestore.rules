@@ -1,0 +1,65 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidProfile(data) {
+      return data.keys().hasAll(['id', 'herName', 'theme', 'hugCount', 'petCatCount', 'ownerId', 'updatedAt'])
+        && data.id is string && data.id.size() <= 128
+        && data.herName is string && data.herName.size() <= 50
+        && data.theme in ['blush', 'sunset', 'lavender', 'mint']
+        && data.hugCount is int && data.hugCount >= 0
+        && data.petCatCount is int && data.petCatCount >= 0
+        && data.ownerId is string && data.ownerId == request.auth.uid
+        && (!('careChecked' in data) || (data.careChecked is list && data.careChecked.size() <= 20));
+    }
+
+    function isValidNote(data) {
+      return data.keys().hasAll(['id', 'text', 'category', 'userId', 'createdAt'])
+        && data.id is string && data.id.size() <= 128
+        && data.text is string && data.text.size() > 0 && data.text.size() <= 500
+        && data.category in ['compliment', 'support', 'reminder', 'smile', 'sweet']
+        && data.userId is string && data.userId == request.auth.uid
+        && (!('authorNote' in data) || (data.authorNote is string && data.authorNote.size() <= 100));
+    }
+
+    match /user_profiles/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && request.auth.uid == userId;
+      allow create: if isSignedIn() && isValidId(userId) && request.auth.uid == userId
+        && isValidProfile(incoming());
+      allow update: if isSignedIn() && isValidId(userId) && request.auth.uid == userId
+        && isValidProfile(incoming()) && incoming().ownerId == existing().ownerId;
+      allow delete: if isSignedIn() && isValidId(userId) && request.auth.uid == userId;
+
+      match /notes/{noteId} {
+        allow get, list: if isSignedIn() && request.auth.uid == userId;
+        allow create: if isSignedIn() && isValidId(noteId) && request.auth.uid == userId
+          && isValidNote(incoming());
+        allow update: if isSignedIn() && isValidId(noteId) && request.auth.uid == userId
+          && isValidNote(incoming()) && incoming().userId == existing().userId;
+        allow delete: if isSignedIn() && isValidId(noteId) && request.auth.uid == userId;
+      }
+    }
+  }
+}
